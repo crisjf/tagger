@@ -1,5 +1,4 @@
 function getSpreadsheetID(callback) {
-	console.log('getting the spreadsheetsID')
 	chrome.storage.sync.get(['spreadsheetId'], function(items) {
 		var spreadsheetId = items['spreadsheetId'];
 		callback(spreadsheetId)
@@ -7,7 +6,6 @@ function getSpreadsheetID(callback) {
 }
 
 function next_song(spreadsheetId){
-	console.log('moving to next song')
 	var url = "https://spreadsheets.google.com/feeds/list/"+spreadsheetId+"/od6/public/basic?alt=json";
 	$.get({
 		url: url,
@@ -32,9 +30,35 @@ function next_song(spreadsheetId){
 	});
 };
 
-var current_url = window.location.href
+function check_song(spreadsheetId){
+	var url = "https://spreadsheets.google.com/feeds/list/"+spreadsheetId+"/od6/public/basic?alt=json";
+	var current_url = window.location.href.replace("https://", "").replace("http://", "")
+	$.get({
+		url: url,
+		success: function(response) {
+			var data = response.feed.entry,
+			len = data.length,
+			i = 0;
+			for (i = 0; i < len; i++) {
+				if (current_url == data[i].title.$t.replace("https://", "").replace("http://", "")) {
+					load_buttons()
+					break;
+				}
+			}
+		}
+	});
+};
+
+function load_buttons(){
+	console.log('loading buttons')
+	var body = document.getElementById("tagger_div");
+	body.appendChild(yes_button);
+	body.appendChild(no_button);
+	body.appendChild(next_button);
+}
 
 function talk2b(tag) {
+	var current_url = window.location.href
 	chrome.runtime.sendMessage(tag+' '+current_url)
 }
 
@@ -64,12 +88,8 @@ next_button.style.width = buttonwidth;
 next_button.style.height = buttonheight;
 next_button.style.fontSize = buttonfont;
 
-var body = document.getElementById("tagger_div");
-body.appendChild(yes_button);
-body.appendChild(no_button);
-body.appendChild(next_button);
-
 yes_button.addEventListener ("click", function() {talk2b('TRUE')});
 no_button.addEventListener ("click", function() {talk2b('FALSE')});
 next_button.addEventListener ("click", function() {getSpreadsheetID(next_song)});
 
+getSpreadsheetID(check_song)
