@@ -1,0 +1,30 @@
+{
+  "name": "Tagger",
+  "description": "Tag pages",
+  "version": "0.1.0",
+  "incognito": "split",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "permissions": [
+    "https://genius.com/",
+    "identity",
+    "https://www.googleapis.com/auth/spreadsheet"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "manifest_version": 2,
+  "oauth2": {
+    "client_id": "",
+    "scopes": ["https://www.googleapis.com/auth/spreadsheets"]
+  },
+  "content_scripts": [
+  {
+    "matches": [
+      "*://genius.com/*"
+    ],
+    "js": ["content.js",
+           "google-spreadsheet.js",
+           "jquery-1.12.0.min.js",
+           "api.js"]
+  }]
+}
