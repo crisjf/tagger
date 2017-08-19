@@ -30,7 +30,7 @@ function next_song(spreadsheetId){
 	});
 };
 
-function check_song(spreadsheetId){
+function check_song(spreadsheetId,callback){
 	var url = "https://spreadsheets.google.com/feeds/list/"+spreadsheetId+"/od6/public/basic?alt=json";
 	var current_url = window.location.href.replace("https://", "").replace("http://", "")
 	$.get({
@@ -41,7 +41,7 @@ function check_song(spreadsheetId){
 			i = 0;
 			for (i = 0; i < len; i++) {
 				if (current_url == data[i].title.$t.replace("https://", "").replace("http://", "")) {
-					load_buttons()
+					callback()
 					break;
 				}
 			}
@@ -49,23 +49,32 @@ function check_song(spreadsheetId){
 	});
 };
 
+function talk2b(tag) {
+	chrome.runtime.sendMessage(tag, function(response){
+		if (response=='success'||response=='no-song') {
+			if (response=='no-song') {
+				alert('Song not found in spreadsheet')
+			}
+			getSpreadsheetID(next_song)
+		} else {
+			alert('Selection not recorded, please try again')
+		}
+	})
+}
+
 function load_buttons(){
+	target.insertAdjacentHTML("afterbegin", "<div id='tagger_div' class='tagger_div'></div>");
 	var body = document.getElementById("tagger_div");
+	var desctext = document.createElement("p");
+	desctext.innerHTML += 'Banner created by tagger extension:';
+	body.appendChild(desctext);
 	body.appendChild(yes_button);
 	body.appendChild(no_button);
 	body.appendChild(next_button);
 }
 
-function talk2b(tag) {
-	var current_url = window.location.href
-	chrome.runtime.sendMessage(tag+' '+current_url)
-}
-
-// Create top div
 var target = document.body;
-target.insertAdjacentHTML("afterbegin", "<div id='tagger_div' class='tagger_div' width='100%' lenght='10%'></div>");
 
-// Create the buttons
 var yes_button = document.createElement("button");
 yes_button.innerHTML = "YES";
 yes_button.id = 'tagger_button'
@@ -82,11 +91,7 @@ yes_button.addEventListener ("click", function() {talk2b('TRUE')});
 no_button.addEventListener ("click", function() {talk2b('FALSE')});
 next_button.addEventListener ("click", function() {getSpreadsheetID(next_song)});
 
-getSpreadsheetID(check_song)
-
-// In order to make the page change automatically after the selection, 
-// I need to look into receiving messages from the background and using them
-// to trigger the next_song function once the POST call has been executed
-
-
+getSpreadsheetID(function(spreadsheetId) {
+	check_song(spreadsheetId,load_buttons)
+})
 

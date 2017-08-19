@@ -16,19 +16,17 @@ function getSpreadsheetID(callback) {
 	});
 }
 
-function authorize(spreadsheetId,current_url,tag) {
+function authorize(callback) {
 	console.log('authorizing')
-	console.log(current_url)
-	console.log(tag)
 	chrome.identity.getAuthToken(
 		{'interactive': true},
 		function(token){
-			current_pos(current_url,spreadsheetId,tag,token)
+			callback(token);
 		}
 	);
 }
 
-function current_pos(current_url,spreadsheetId,tag,token){
+function current_pos(current_url,spreadsheetId,callback){
 	var range = 'Sheet1!A2:B'
 	var url = "https://sheets.googleapis.com/v4/spreadsheets/"+spreadsheetId+"/values/"+range+"?key="+API_KEY
 	$.get({
@@ -45,17 +43,23 @@ function current_pos(current_url,spreadsheetId,tag,token){
 					break;
 				}
 			}
-			if (pos == null) {
-				console.log('Song not found')
-			} else {
-				addValue(spreadsheetId,token,tag,pos)
-			}
+			callback(pos)
 		}
 	})
 };
 
 
-function addValue(spreadsheetId,token,tag,pos) {
+function getParams(current_url,callback){
+	getSpreadsheetID(function(spreadsheetId){
+		current_pos(current_url,spreadsheetId,function(pos) {
+			authorize(function(token){
+				callback(token,pos,spreadsheetId)
+			})
+		});
+	});
+}
+
+function addValue(spreadsheetId,token,tag,pos,callback) {
 	var url = "https://sheets.googleapis.com/v4/spreadsheets/"+spreadsheetId+"/values:batchUpdate/"
 	var body = '{"data":[{"range":"'+pos+'","values":[["'+tag+'"]]}],"valueInputOption":"RAW"}';
 	console.log(body)
@@ -65,10 +69,13 @@ function addValue(spreadsheetId,token,tag,pos) {
 		dataType: "text",
 		data : body,
 		success: function( response ) {
+			console.log('Yay!')
 			console.log(response);
+			callback('success');
 		},
 		error : function(error) {
 			console.log(error);
+			callback('error');
 		},
 		beforeSend : function( xhr ) {
 			xhr.setRequestHeader('Authorization', "Bearer "+token);
@@ -78,13 +85,18 @@ function addValue(spreadsheetId,token,tag,pos) {
 }
 
 function handleListener (response, sender, sendResponse) {
-	var tag = response.split(" ")[0]
-	var current_url = response.split(" ")[1].replace("https://", "").replace("http://", "")
-	console.log(current_url)
-	console.log(tag)
-	getSpreadsheetID (function(k) {authorize(k,current_url, tag);}); 
+	var tag = response
+	var current_url = sender.tab.url.replace("https://", "").replace("http://", "")
+	getParams(current_url,function(token,pos,spreadsheetId) {
+		if (pos == null) {
+			sendResponse('no-song');
+		} else {
+			addValue(spreadsheetId,token,tag,pos, function (message) {
+				sendResponse(message);
+			});
+		};
+	});
+	return true;
 }
 
 chrome.runtime.onMessage.addListener(handleListener)
-
-
