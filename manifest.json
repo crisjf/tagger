@@ -27,12 +27,16 @@
       "https://www.googleapis.com/auth/drive.file"
     ]
   },
+  "web_accessible_resources": [
+    "content.css"
+  ],
   "options_page": "options.html",
   "content_scripts": [
   {
     "matches": [
       "*://genius.com/*"
     ],
+    "css": ["content.css"],
     "js": ["google-spreadsheet.js",
            "jquery-1.12.0.min.js",
            "content.js"]

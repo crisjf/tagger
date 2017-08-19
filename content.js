@@ -50,7 +50,6 @@ function check_song(spreadsheetId){
 };
 
 function load_buttons(){
-	console.log('loading buttons')
 	var body = document.getElementById("tagger_div");
 	body.appendChild(yes_button);
 	body.appendChild(no_button);
@@ -64,32 +63,30 @@ function talk2b(tag) {
 
 // Create top div
 var target = document.body;
-target.insertAdjacentHTML("afterbegin", "<div id='tagger_div' width='100%' lenght='10%'></div>");
+target.insertAdjacentHTML("afterbegin", "<div id='tagger_div' class='tagger_div' width='100%' lenght='10%'></div>");
 
 // Create the buttons
-var buttonwidth = '25%';
-var buttonheight = '25%';
-var buttonfont = '25';
 var yes_button = document.createElement("button");
 yes_button.innerHTML = "YES";
-yes_button.style.width = buttonwidth;
-yes_button.style.height = buttonheight;
-yes_button.style.fontSize = buttonfont;
+yes_button.id = 'tagger_button'
 
 var no_button = document.createElement("button");
 no_button.innerHTML = "NO";
-no_button.style.width = buttonwidth;
-no_button.style.height = buttonheight;
-no_button.style.fontSize = buttonfont;
+no_button.id = 'tagger_button'
 
 var next_button = document.createElement("button");
 next_button.innerHTML = "NEXT";
-next_button.style.width = buttonwidth;
-next_button.style.height = buttonheight;
-next_button.style.fontSize = buttonfont;
+next_button.id = 'tagger_button'
 
 yes_button.addEventListener ("click", function() {talk2b('TRUE')});
 no_button.addEventListener ("click", function() {talk2b('FALSE')});
 next_button.addEventListener ("click", function() {getSpreadsheetID(next_song)});
 
 getSpreadsheetID(check_song)
+
+// In order to make the page change automatically after the selection, 
+// I need to look into receiving messages from the background and using them
+// to trigger the next_song function once the POST call has been executed
+
+
+

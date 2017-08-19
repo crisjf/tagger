@@ -1,0 +1,26 @@
+.tagger_div { 
+  background-color: yellow !important;
+}
+
+#tagger_div button {
+  padding: 15px 25px !important;
+  width: 25% !important;
+  height:10% !important;
+  font-size: 24px !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  outline: none !important;
+  color: #fff !important;
+  background-color: #4CAF50 !important;
+  border: none !important;
+  border-radius: 15px !important;
+  box-shadow: 0 9px #999 !important;
+}
+
+#tagger_div button:hover {background-color: #3e8e41 !important}
+
+#tagger_div button:active {
+  background-color: #3e8e41 !important;
+  box-shadow: 0 5px #666 !important;
+  transform: translateY(4px) !important;
+}
