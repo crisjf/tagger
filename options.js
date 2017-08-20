@@ -2,10 +2,12 @@ function showCurrent() {
   chrome.storage.sync.get(['spreadsheetId'], function(items) {
     console.log(items);
     var status = document.getElementById('status');
+    var status_link = document.getElementById('status_link');
     if (items == null) {
       status.textContent = 'No spreadsheetId specified'
     } else {
       status.textContent = 'Current spreadsheetId: '+items['spreadsheetId']
+      status_link.href = 'https://docs.google.com/spreadsheets/d/'+items['spreadsheetId']
     }
   }); 
 }
@@ -17,7 +19,9 @@ function save_options() {
     spreadsheetId: spreadsheetId
   }, function() {
     var status = document.getElementById('status');
-    status.textContent = 'New spreadsheetId:'+spreadsheetId;
+    var status_link = document.getElementById('status_link');
+    status.textContent = 'New spreadsheetId: '+spreadsheetId;
+    status_link.href = 'https://docs.google.com/spreadsheets/d/'+spreadsheetId
   });
 }
 
@@ -28,7 +32,9 @@ function reset_options() {
       spreadsheetId: spreadsheetId
     }, function() {
       var status = document.getElementById('status');
-      status.textContent = 'New spreadsheetId:'+spreadsheetId;
+      var status_link = document.getElementById('status_link');
+      status.textContent = 'New spreadsheetId: '+spreadsheetId;
+      status_link.href = 'https://docs.google.com/spreadsheets/d/'+spreadsheetId
     });
   }); 
 }

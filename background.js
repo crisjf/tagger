@@ -1,17 +1,25 @@
 console.log('Reloaded!')
 
-chrome.storage.sync.set({
-    spreadsheetId: '1Qouq_N8m3clE2281eX2-EtUZLnR_GJjRFZogIja5Dhs',
-    spreadsheetIdDef: '1Qouq_N8m3clE2281eX2-EtUZLnR_GJjRFZogIja5Dhs'
-}, function() {});
+// chrome.storage.sync.clear()
+
+function setSpreadsheetID() {
+	chrome.storage.sync.set({
+		spreadsheetId: '1Qouq_N8m3clE2281eX2-EtUZLnR_GJjRFZogIja5Dhs',
+		spreadsheetIdDef: '1Qouq_N8m3clE2281eX2-EtUZLnR_GJjRFZogIja5Dhs'
+	});
+}
 
 var API_KEY = 'AIzaSyD0_FxY9WT-7Qrqt7JNcxEvXtYjsvFPs9Y'; // In principle I could use the token to authenticate the get call
 
+getSpreadsheetID(function(spreadsheetId){
+	if (spreadsheetId==null) {
+		setSpreadsheetID()
+	}
+});
+
 function getSpreadsheetID(callback) {
-	console.log('getting the spreadsheetsID')
 	chrome.storage.sync.get(['spreadsheetId'], function(items) {
 		var spreadsheetId = items['spreadsheetId'];
-		console.log(spreadsheetId)
 		callback(spreadsheetId)
 	});
 }

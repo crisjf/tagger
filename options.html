@@ -1,16 +1,75 @@
 <!DOCTYPE html>
 <html>
-<head><title>Tagger Options</title></head>
+<head>
+<style>
+body {
+    background-color: black;
+    color: #999999;
+    font-size: 20px;
+}
+
+div {
+	margin-top: 10px;
+}
+
+label {
+	margin-top: 10px;
+}
+
+input {
+	font-size: 20px;
+	background-color: black;
+    color: #999999;
+    width: 50%;
+}
+
+button {
+  width: 10%;
+  height: 5%;
+  font-size: 20px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: black;
+  background-color: #ffff66;
+  border: none;
+  border-radius: 15px;
+  overflow: auto;
+  vertical-align: middle;
+  margin-top: 5px;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #ffff00;
+  font-weight: bold;
+}
+
+button:active {
+  background-color: #ffff00;
+  font-weight: bold;
+  transform: translateY(2px);
+}
+
+
+</style>
+<title>Tagger Options</title>
+</head>
 <body>
+<h3>Options for tagger</h3>
 
 <label>
 	spreadsheetId:
   <input type="text" id='spreadsheetId_input'>
 </label>
 
-<div id="status"></div>
+<div id="status" class="status"> </div>
+<div><a href="" id="status_link" class="status_link">Link to spreadsheet</a></div>
+<div>
 <button id="save">Save</button>
 <button id="reset">Reset</button>
 <script src="options.js"></script>
+</div>
 </body>
 </html>

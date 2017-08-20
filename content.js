@@ -71,21 +71,30 @@ function load_buttons(){
 	body.appendChild(yes_button);
 	body.appendChild(no_button);
 	body.appendChild(next_button);
+	body.appendChild(sheet_link);
 }
 
 var target = document.body;
 
 var yes_button = document.createElement("button");
 yes_button.innerHTML = "YES";
-yes_button.id = 'tagger_button'
+yes_button.id = 'tagger_button';
 
 var no_button = document.createElement("button");
 no_button.innerHTML = "NO";
-no_button.id = 'tagger_button'
+no_button.id = 'tagger_button';
 
 var next_button = document.createElement("button");
 next_button.innerHTML = "NEXT";
-next_button.id = 'tagger_button'
+next_button.id = 'tagger_button';
+
+var sheet_link = document.createElement("a");
+sheet_link.innerHTML = "View SpreadSheet";
+sheet_link.class = 'taggerSheetButton';
+getSpreadsheetID(function(spreadsheetId){
+	sheet_link.href = 'https://docs.google.com/spreadsheets/d/'+spreadsheetId;
+})
+
 
 yes_button.addEventListener ("click", function() {talk2b('TRUE')});
 no_button.addEventListener ("click", function() {talk2b('FALSE')});

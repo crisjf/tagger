@@ -45,3 +45,15 @@
 }
 
 
+.tagger_div a {
+  color: #999999 !important;
+  float: right !important;
+  position: absolute !important;
+  bottom: 3px !important;
+  right: 10px !important;
+}
+
+
+
+
+
