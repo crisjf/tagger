@@ -7,6 +7,7 @@ function getSpreadsheetID(callback) {
 
 function next_song(spreadsheetId){
 	var url = "https://spreadsheets.google.com/feeds/list/"+spreadsheetId+"/od6/public/basic?alt=json";
+	console.log(url)
 	$.get({
 		url: url,
 		success: function(response) {
@@ -16,7 +17,7 @@ function next_song(spreadsheetId){
 			var next_url = null;
 			for (i = 0; i < len; i++) {
 				var cont = data[i].content.$t
-				if (cont.indexOf('tag') == -1) { 
+				if (cont.indexOf(', tag: ')==-1&&cont.indexOf('tag: ')!=0) { 
 					var next_url = data[i].title.$t
 					break;
 				}  
