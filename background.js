@@ -1,16 +1,23 @@
 console.log('Reloaded!')
 
-// chrome.storage.sync.clear()
-
 function setSpreadsheetID() {
 	chrome.storage.sync.set({
 		spreadsheetId: '1Qouq_N8m3clE2281eX2-EtUZLnR_GJjRFZogIja5Dhs',
-		spreadsheetIdDef: '1Qouq_N8m3clE2281eX2-EtUZLnR_GJjRFZogIja5Dhs'
+		spreadsheetIdDef: '1Qouq_N8m3clE2281eX2-EtUZLnR_GJjRFZogIja5Dhs',
+		tagCol: 'tag',
+		tagColDef: 'tag',
+		tagColPos: 'B',
+		tagColPosDef: 'B',
+		urlCol: 'url',
+		urlColDef: 'url',
+		urlColPos: 'A',
+		urlColPosDef: 'A',
+		sheetName: 'Sheet1',
+		sheetNameDef: 'Sheet1'
 	});
 }
 
-var API_KEY = 'AIzaSyD0_FxY9WT-7Qrqt7JNcxEvXtYjsvFPs9Y'; // In principle I could use the token to authenticate the get call
-
+chrome.storage.sync.clear()
 getSpreadsheetID(function(spreadsheetId){
 	if (spreadsheetId==null) {
 		setSpreadsheetID()
@@ -22,10 +29,9 @@ function getSpreadsheetID(callback) {
 		var spreadsheetId = items['spreadsheetId'];
 		callback(spreadsheetId)
 	});
-}
+};
 
 function authorize(callback) {
-	console.log('authorizing')
 	chrome.identity.getAuthToken(
 		{'interactive': true},
 		function(token){
@@ -34,11 +40,16 @@ function authorize(callback) {
 	);
 }
 
-function current_pos(current_url,spreadsheetId,callback){
-	var range = 'Sheet1!A2:B'
-	var url = "https://sheets.googleapis.com/v4/spreadsheets/"+spreadsheetId+"/values/"+range+"?key="+API_KEY
+function current_pos(current_url,spreadsheetId,token,callback){
+	var sheetName = 'Sheet1';
+	var range = sheetName+'!A2:B';
+	var url = "https://sheets.googleapis.com/v4/spreadsheets/"+spreadsheetId+"/values/"+range
 	$.get({
 		url: url,
+		beforeSend : function( xhr ) {
+			xhr.setRequestHeader('Authorization', "Bearer "+token);
+			xhr.setRequestHeader("Content-Type", "application/json")
+		},
 		success: function(response) {
 			var pos = null
 			var data = response.values
@@ -47,7 +58,7 @@ function current_pos(current_url,spreadsheetId,callback){
 			for (i = 0; i < len; i++) {
 				var data_url = data[i][0].replace("https://", "").replace("http://", "")
 				if (data_url == current_url) { 
-					var pos = "Sheet1!B"+(i+2).toString()
+					var pos = sheetName+"!B"+(i+2).toString()
 					break;
 				}
 			}
@@ -56,33 +67,28 @@ function current_pos(current_url,spreadsheetId,callback){
 	})
 };
 
-
 function getParams(current_url,callback){
-	getSpreadsheetID(function(spreadsheetId){
-		current_pos(current_url,spreadsheetId,function(pos) {
-			authorize(function(token){
+	getSpreadsheetID(function(spreadsheetId) {
+		authorize(function(token) {
+			current_pos(current_url,spreadsheetId,token,function(pos) {
 				callback(token,pos,spreadsheetId)
-			})
-		});
+			});
+		})
 	});
 }
 
 function addValue(spreadsheetId,token,tag,pos,callback) {
 	var url = "https://sheets.googleapis.com/v4/spreadsheets/"+spreadsheetId+"/values:batchUpdate/"
 	var body = '{"data":[{"range":"'+pos+'","values":[["'+tag+'"]]}],"valueInputOption":"RAW"}';
-	console.log(body)
 	$.ajax({
 		type: 'POST',
 		url: url,
 		dataType: "text",
 		data : body,
 		success: function( response ) {
-			console.log('Yay!')
-			console.log(response);
 			callback('success');
 		},
 		error : function(error) {
-			console.log(error);
 			callback('error');
 		},
 		beforeSend : function( xhr ) {

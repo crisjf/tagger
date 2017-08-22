@@ -6,6 +6,7 @@ function getSpreadsheetID(callback) {
 }
 
 function next_song(spreadsheetId){
+	var tagCol = 'tag';
 	var url = "https://spreadsheets.google.com/feeds/list/"+spreadsheetId+"/od6/public/basic?alt=json";
 	console.log(url)
 	$.get({
@@ -17,7 +18,7 @@ function next_song(spreadsheetId){
 			var next_url = null;
 			for (i = 0; i < len; i++) {
 				var cont = data[i].content.$t
-				if (cont.indexOf(', tag: ')==-1&&cont.indexOf('tag: ')!=0) { 
+				if (cont.indexOf(', '+tagCol+': ')==-1&&cont.indexOf(tagCol+': ')!=0) { 
 					var next_url = data[i].title.$t
 					break;
 				}  
@@ -32,19 +33,28 @@ function next_song(spreadsheetId){
 };
 
 function check_song(spreadsheetId,callback){
+	var tagCol = 'tag';
 	var url = "https://spreadsheets.google.com/feeds/list/"+spreadsheetId+"/od6/public/basic?alt=json";
 	var current_url = window.location.href.replace("https://", "").replace("http://", "")
 	$.get({
 		url: url,
 		success: function(response) {
+			var missing_songs = 0;
 			var data = response.feed.entry,
 			len = data.length,
 			i = 0;
+			var is_present = false;
 			for (i = 0; i < len; i++) {
-				if (current_url == data[i].title.$t.replace("https://", "").replace("http://", "")) {
-					callback()
-					break;
+				var cont = data[i].content.$t
+				if (cont.indexOf(', '+tagCol+': ')==-1&&cont.indexOf(tagCol+': ')!=0) { 
+					missing_songs +=1;
 				}
+				if (current_url == data[i].title.$t.replace("https://", "").replace("http://", "")) {
+					is_present = true;
+				}
+			}
+			if (is_present) {
+				callback(missing_songs);
 			}
 		}
 	});
@@ -63,7 +73,7 @@ function talk2b(tag) {
 	})
 }
 
-function load_buttons(){
+function load_buttons(missing_songs){
 	target.insertAdjacentHTML("afterbegin", "<div id='tagger_div' class='tagger_div'></div>");
 	var body = document.getElementById("tagger_div");
 	var desctext = document.createElement("p");
@@ -72,8 +82,12 @@ function load_buttons(){
 	body.appendChild(yes_button);
 	body.appendChild(no_button);
 	body.appendChild(next_button);
+	sheet_link.innerHTML = "SpreadSheet ("+missing_songs.toString()+" left)";
 	body.appendChild(sheet_link);
 }
+
+
+
 
 var target = document.body;
 
@@ -90,12 +104,11 @@ next_button.innerHTML = "NEXT";
 next_button.id = 'tagger_button';
 
 var sheet_link = document.createElement("a");
-sheet_link.innerHTML = "View SpreadSheet";
 sheet_link.class = 'taggerSheetButton';
+sheet_link.target="_blank";
 getSpreadsheetID(function(spreadsheetId){
 	sheet_link.href = 'https://docs.google.com/spreadsheets/d/'+spreadsheetId;
 })
-
 
 yes_button.addEventListener ("click", function() {talk2b('TRUE')});
 no_button.addEventListener ("click", function() {talk2b('FALSE')});

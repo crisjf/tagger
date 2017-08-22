@@ -59,16 +59,31 @@ button:active {
 <body>
 <h3>Options for tagger</h3>
 
-<label>
-	spreadsheetId:
-  <input type="text" id='spreadsheetId_input'>
-</label>
+<div id="spreadsheetId_div"><label>
+	spreadsheetId: <input type="text" id='spreadsheetId_input'>
+</label></div>
+<div id="tagCol_div"><label>
+	tag column: <input type="text" id='tagCol_input'>
+</label></div>
+<div id="urlCol_div"><label>
+	url column: <input type="text" id='urlCol_input'>
+</label></div>
+<div id="sheetName_div"><label>
+	sheet name: <input type="text" id='sheetName_input'>
+</label></div>
 
-<div id="status" class="status"> </div>
-<div><a href="" id="status_link" class="status_link">Link to spreadsheet</a></div>
+<div id="status" class="status">
+	<p id="spreadsheetId_status"></p>
+	<p id="tagCol_status"></p>
+	<p id="urlCol_status"></p>
+	<p id="sheetName_status"></p>
+</div>
+<div><a href="" id="status_link" class="status_link" target="_blank">View spreadsheet</a></div>
 <div>
 <button id="save">Save</button>
 <button id="reset">Reset</button>
+<button id="start">Start</button>
+<script src="jquery-1.12.0.min.js"></script>
 <script src="options.js"></script>
 </div>
 </body>
